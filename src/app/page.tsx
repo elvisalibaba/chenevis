@@ -378,11 +378,11 @@ const translations = {
 
 export default function HomePage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [language, setLanguage] = useState('fr');
+  const [language, setLanguage] = useState<'fr' | 'en'>('fr'); // Changé ici
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30 });
 
-  const t = translations[language];
+  const t = translations[language]; // Maintenant c'est sécurisé
 
   const fadeInUp = {
     initial: { opacity: 0, y: 30 },
