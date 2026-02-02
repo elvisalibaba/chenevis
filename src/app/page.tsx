@@ -378,17 +378,17 @@ const translations = {
 
 export default function HomePage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [language, setLanguage] = useState<'fr' | 'en'>('fr'); // Changé ici
+  const [language, setLanguage] = useState<'fr' | 'en'>('fr');
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30 });
 
-  const t = translations[language]; // Maintenant c'est sécurisé
+  const t = translations[language];
 
   const fadeInUp = {
     initial: { opacity: 0, y: 30 },
     whileInView: { opacity: 1, y: 0 },
     viewport: { once: true, margin: "-50px" },
-    transition: { duration: 0.6, ease: "easeOut" }
+    transition: { duration: 0.6, ease: "easeOut" as const } // Changé ici
   };
 
   const staggerContainer = {
