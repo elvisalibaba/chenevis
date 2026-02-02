@@ -8,7 +8,9 @@ import {
   Menu, X, History, ShieldCheck, Leaf, MapPin, Phone, Mail,
   Star, Send, Facebook, Instagram, Linkedin, Globe,
   Truck, CheckCircle, Clock, Users, Award, ChevronRight,
-  Fish, Utensils, Leaf as LeafIcon, Globe as GlobeIcon
+  Fish, Utensils, Leaf as LeafIcon, Globe as GlobeIcon,
+  Camera, ChevronLeft, ChevronRight as ChevronRightIcon,
+  ShoppingCart, DollarSign
 } from 'lucide-react';
 
 // Données de traduction
@@ -19,6 +21,7 @@ const translations = {
       about: "À Propos",
       categories: "Nos Catégories",
       products: "Produits",
+      gallery: "Galerie",
       contact: "Contact",
       company: "SCA de la Maladière",
       since: "Depuis 1964"
@@ -137,9 +140,9 @@ const translations = {
           desc: "Compression de chènevis pour une diffusion lente."
         },
         {
-          title: "Huile Cosmétique Chanvre",
-          sizes: "50ml • 100ml • 250ml",
-          desc: "Huile pure pour soins cutanés, riche en antioxydants."
+          title: "Graines Décortiquées",
+          sizes: "250g • 500g • 1kg",
+          desc: "Graines de chanvre décortiquées pour l'alimentation."
         },
         {
           title: "Amorçage Premium",
@@ -152,7 +155,21 @@ const translations = {
           desc: "Farine riche en protéines pour pains et pâtisseries."
         }
       ],
-      cta: "Demander un tarif"
+      cta: "Demander un tarif",
+      emailSubject: "Demande de tarif pour",
+      emailBody: "Bonjour,\n\nJe souhaite obtenir un tarif pour le produit suivant :\n\nProduit: "
+    },
+    
+    // Galerie
+    gallery: {
+      title: "Notre Galerie",
+      subtitle: "Découvrez notre univers à travers nos photos",
+      all: "Toutes les photos",
+      farming: "Culture",
+      processing: "Transformation",
+      products: "Produits",
+      team: "Équipe",
+      viewMore: "Voir plus de photos"
     },
     
     // Certifications
@@ -200,6 +217,7 @@ const translations = {
       about: "About",
       categories: "Our Categories",
       products: "Products",
+      gallery: "Gallery",
       contact: "Contact",
       company: "SCA de la Maladière",
       since: "Since 1964"
@@ -318,9 +336,9 @@ const translations = {
           desc: "Compressed hemp seeds for slow release."
         },
         {
-          title: "Cosmetic Hemp Oil",
-          sizes: "50ml • 100ml • 250ml",
-          desc: "Pure oil for skin care, rich in antioxidants."
+          title: "Shelled Hemp Seeds",
+          sizes: "250g • 500g • 1kg",
+          desc: "Shelled hemp seeds for nutrition."
         },
         {
           title: "Premium Groundbait",
@@ -333,7 +351,21 @@ const translations = {
           desc: "Protein-rich flour for breads and pastries."
         }
       ],
-      cta: "Request a quote"
+      cta: "Request a quote",
+      emailSubject: "Price request for",
+      emailBody: "Hello,\n\nI would like to get a price quote for the following product:\n\nProduct: "
+    },
+    
+    // Galerie
+    gallery: {
+      title: "Our Gallery",
+      subtitle: "Discover our world through our photos",
+      all: "All photos",
+      farming: "Farming",
+      processing: "Processing",
+      products: "Products",
+      team: "Team",
+      viewMore: "View more photos"
     },
     
     // Certifications
@@ -379,6 +411,7 @@ const translations = {
 export default function HomePage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [language, setLanguage] = useState<'fr' | 'en'>('fr');
+  const [selectedGalleryImage, setSelectedGalleryImage] = useState<string | null>(null);
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30 });
 
@@ -388,7 +421,7 @@ export default function HomePage() {
     initial: { opacity: 0, y: 30 },
     whileInView: { opacity: 1, y: 0 },
     viewport: { once: true, margin: "-50px" },
-    transition: { duration: 0.6, ease: "easeOut" as const } // Changé ici
+    transition: { duration: 0.6, ease: "easeOut" as const }
   };
 
   const staggerContainer = {
@@ -398,6 +431,16 @@ export default function HomePage() {
         staggerChildren: 0.1
       }
     }
+  };
+
+  // Fonction pour envoyer un email avec demande de prix
+  const sendPriceRequestEmail = (productTitle: string) => {
+    const subject = `${t.products.emailSubject} ${productTitle}`;
+    const body = `${t.products.emailBody}${productTitle}\n\nPourriez-vous me transmettre votre tarif détaillé ainsi que les conditions de livraison ?\n\nMerci d'avance.\n\nCordialement,\n[Nom]\n[Entreprise]\n[Téléphone]`;
+    
+    const mailtoLink = `mailto:contact@scamaladiere.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    
+    window.open(mailtoLink, '_blank');
   };
 
   // CATÉGORIES DE PRODUITS
@@ -425,6 +468,7 @@ export default function HomePage() {
     }
   ];
 
+  // MODIFIÉ : Supprimé "Huile Cosmétique Chanvre" et changé les boutons pour envoyer des emails
   const products = [
     {
       title: t.products.items[0].title,
@@ -458,12 +502,12 @@ export default function HomePage() {
     },
     {
       title: t.products.items[3].title,
-      category: "cosmetic",
-      img: "/images/huile-cosmetique.jpg", 
+      category: "food",
+      img: "/images/graines-decorees.jpg", // Remplacé l'image d'huile cosmétique
       sizes: t.products.items[3].sizes,
       desc: t.products.items[3].desc,
-      icon: <LeafIcon size={18} />,
-      color: "bg-purple-50 text-purple-600",
+      icon: <Sprout size={18} />,
+      color: "bg-emerald-100 text-emerald-800",
       popular: false
     },
     {
@@ -486,6 +530,18 @@ export default function HomePage() {
       color: "bg-emerald-100 text-emerald-800",
       popular: true
     }
+  ];
+
+  // IMAGES DE LA GALERIE
+  const galleryImages = [
+    { id: 1, src: '/images/ferme.jpg', category: 'farming', alt: 'Ferme SCA de la Maladière' },
+    { id: 2, src: '/images/graine.jpg', category: 'farming', alt: 'Graines de chanvre' },
+    { id: 3, src: '/images/germ.jpg', category: 'farming', alt: 'Germination' },
+    { id: 4, src: '/images/germi.jpg', category: 'farming', alt: 'Culture de chanvre' },
+    { id: 5, src: '/images/monstre4.jpeg', category: 'products', alt: 'Chènevis Monstre' },
+    { id: 6, src: '/images/huil7.jpeg', category: 'products', alt: 'Huile de chènevis' },
+    { id: 7, src: '/images/pallets1.jpeg', category: 'products', alt: 'Pellets pour pêche' },
+    { id: 8, src: '/images/amorcage1.jpeg', category: 'products', alt: 'Amorçage premium' },
   ];
 
   const processSteps = [
@@ -585,6 +641,7 @@ export default function HomePage() {
               <a href="#entreprise" className="hover:text-emerald-600 transition-colors duration-300">{t.nav.about}</a>
               <a href="#categories" className="hover:text-emerald-600 transition-colors duration-300">{t.nav.categories}</a>
               <a href="#produits" className="hover:text-emerald-600 transition-colors duration-300">{t.nav.products}</a>
+              <a href="#gallery" className="hover:text-emerald-600 transition-colors duration-300">{t.nav.gallery}</a>
               <a href="#contact" className="bg-[#164228] text-white px-4 py-2 rounded-full hover:bg-[#0f2f1c] transition-colors duration-300 shadow-sm">
                 {t.nav.contact}
               </a>
@@ -645,6 +702,9 @@ export default function HomePage() {
               </a>
               <a href="#produits" className="py-3 px-4 hover:bg-emerald-50 rounded-lg" onClick={() => setIsMenuOpen(false)}>
                 {t.nav.products}
+              </a>
+              <a href="#gallery" className="py-3 px-4 hover:bg-emerald-50 rounded-lg" onClick={() => setIsMenuOpen(false)}>
+                {t.nav.gallery}
               </a>
               <a href="#contact" className="py-3 px-4 bg-[#164228] text-white rounded-lg mt-2" onClick={() => setIsMenuOpen(false)}>
                 {t.nav.contact}
@@ -848,60 +908,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* --- 3. NOS CATÉGORIES --- */}
-      <section id="categories" className="py-16 md:py-24 bg-emerald-50/50">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="text-center mb-12 md:mb-16">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif mb-4">{t.categories.title}</h2>
-            <p className="text-slate-600 max-w-2xl mx-auto">
-              {t.categories.subtitle}
-            </p>
-          </div>
-          
-          <div className="grid md:grid-cols-3 gap-6 md:gap-8">
-            {categories.map((category, index) => (
-              <motion.div
-                key={index}
-                {...fadeInUp}
-                transition={{ delay: index * 0.1 }}
-                className="bg-white rounded-2xl shadow-lg overflow-hidden border border-emerald-100 hover:shadow-xl transition-shadow duration-300"
-              >
-                <div className={`p-6 ${category.color} flex items-center justify-between`}>
-                  <div>
-                    <h3 className="text-xl font-bold">{category.title}</h3>
-                    <p className="text-sm opacity-90 mt-1">{category.description}</p>
-                  </div>
-                  <div className="p-3 bg-white/20 rounded-lg">
-                    {category.icon}
-                  </div>
-                </div>
-                <div className="p-6">
-                  <h4 className="font-semibold text-slate-700 mb-3">
-                    {language === 'fr' ? 'Produits phares :' : 'Featured products:'}
-                  </h4>
-                  <ul className="space-y-2">
-                    {category.products.map((product, idx) => (
-                      <li key={idx} className="flex items-center gap-2 text-slate-600">
-                        <CheckCircle size={14} className="text-emerald-500" />
-                        <span className="text-sm">{product}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <a 
-                    href="#produits" 
-                    className="inline-flex items-center gap-1 text-emerald-600 font-medium text-sm mt-6 hover:gap-2 transition-all"
-                  >
-                    {t.categories.seeProducts}
-                    <ChevronRight size={16} />
-                  </a>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* --- 4. STATISTIQUES --- */}
+      {/* --- 3. STATISTIQUES --- */}
       <section className="py-12 md:py-16 bg-[#164228] text-white">
         <div className="max-w-6xl mx-auto px-4">
           <motion.div 
@@ -932,43 +939,119 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* --- 5. PROCESSUS --- */}
-      <section id="processus" className="py-16 md:py-24 px-4 max-w-6xl mx-auto">
-        <div className="text-center mb-12 md:mb-16">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif mb-4">{t.process.title}</h2>
-          <p className="text-slate-500 max-w-2xl mx-auto">
-            {t.process.subtitle}
-          </p>
-        </div>
-        
-        <div className="relative">
-          <div className="hidden md:block absolute top-1/2 left-0 right-0 h-0.5 bg-emerald-100 transform -translate-y-1/2" />
+      {/* --- 4. NOS FILIÈRES ET PROCESSUS (CÔTE À CÔTE) --- */}
+      <section id="categories" className="py-16 md:py-24 bg-emerald-50/50">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="text-center mb-12 md:mb-16">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif mb-4">{t.categories.title} & {t.process.title}</h2>
+            <p className="text-slate-600 max-w-3xl mx-auto">
+              {t.categories.subtitle}
+            </p>
+          </div>
           
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {processSteps.map((step, index) => (
-              <motion.div
-                key={index}
-                {...fadeInUp}
-                transition={{ delay: index * 0.1 }}
-                className="relative"
-              >
-                <div className="bg-white p-6 rounded-2xl shadow-lg border border-emerald-100 hover:shadow-xl transition-shadow duration-300 relative z-10">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="text-3xl font-bold text-emerald-100">{step.number}</div>
-                    <div className="p-3 bg-emerald-50 rounded-xl text-emerald-600">
-                      {step.icon}
-                    </div>
-                  </div>
-                  <h3 className="text-lg font-semibold mb-3 text-[#164228]">{step.title}</h3>
-                  <p className="text-slate-500 text-sm leading-relaxed">{step.description}</p>
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16">
+            {/* COLONNE DE GAUCHE : NOS TROIS FILIÈRES D'EXCELLENCE */}
+            <div>
+              <div className="sticky top-24">
+                <h3 className="text-xl sm:text-2xl font-serif mb-6 text-[#164228]">
+                  {t.categories.title}
+                </h3>
+                <div className="space-y-6">
+                  {categories.map((category, index) => (
+                    <motion.div
+                      key={index}
+                      {...fadeInUp}
+                      transition={{ delay: index * 0.1 }}
+                      className="bg-white rounded-2xl shadow-lg overflow-hidden border border-emerald-100 hover:shadow-xl transition-shadow duration-300"
+                    >
+                      <div className={`p-6 ${category.color} flex items-center justify-between`}>
+                        <div>
+                          <h3 className="text-xl font-bold">{category.title}</h3>
+                          <p className="text-sm opacity-90 mt-1">{category.description}</p>
+                        </div>
+                        <div className="p-3 bg-white/20 rounded-lg">
+                          {category.icon}
+                        </div>
+                      </div>
+                      <div className="p-6">
+                        <h4 className="font-semibold text-slate-700 mb-3">
+                          {language === 'fr' ? 'Produits phares :' : 'Featured products:'}
+                        </h4>
+                        <ul className="space-y-2">
+                          {category.products.map((product, idx) => (
+                            <li key={idx} className="flex items-center gap-2 text-slate-600">
+                              <CheckCircle size={14} className="text-emerald-500" />
+                              <span className="text-sm">{product}</span>
+                            </li>
+                          ))}
+                        </ul>
+                        <a 
+                          href="#produits" 
+                          className="inline-flex items-center gap-1 text-emerald-600 font-medium text-sm mt-6 hover:gap-2 transition-all"
+                        >
+                          {t.categories.seeProducts}
+                          <ChevronRight size={16} />
+                        </a>
+                      </div>
+                    </motion.div>
+                  ))}
                 </div>
-              </motion.div>
-            ))}
+              </div>
+            </div>
+
+            {/* COLONNE DE DROITE : NOTRE PROCESSUS D'EXCELLENCE */}
+            <div>
+              <div className="sticky top-24">
+                <h3 className="text-xl sm:text-2xl font-serif mb-6 text-[#164228]">
+                  {t.process.title}
+                </h3>
+                <p className="text-slate-500 mb-8">
+                  {t.process.subtitle}
+                </p>
+                
+                <div className="relative">
+                  <div className="hidden lg:block absolute left-6 top-0 bottom-0 w-0.5 bg-emerald-100" />
+                  
+                  <div className="space-y-8">
+                    {processSteps.map((step, index) => (
+                      <motion.div
+                        key={index}
+                        {...fadeInUp}
+                        transition={{ delay: index * 0.1 }}
+                        className="relative"
+                      >
+                        <div className="flex items-start gap-4 lg:gap-6">
+                          <div className="flex-shrink-0 relative z-10">
+                            <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center">
+                              <div className="w-10 h-10 bg-emerald-600 rounded-full flex items-center justify-center text-white font-bold">
+                                {step.number}
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className="flex-1">
+                            <div className="bg-white p-6 rounded-2xl shadow-lg border border-emerald-100 hover:shadow-xl transition-shadow duration-300">
+                              <div className="flex items-center justify-between mb-4">
+                                <h4 className="text-lg font-semibold text-[#164228]">{step.title}</h4>
+                                <div className="p-2 bg-emerald-50 rounded-lg text-emerald-600">
+                                  {step.icon}
+                                </div>
+                              </div>
+                              <p className="text-slate-500 text-sm leading-relaxed">{step.description}</p>
+                            </div>
+                          </div>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* --- 6. PRODUITS PAR CATÉGORIE --- */}
+      {/* --- 5. PRODUITS PAR CATÉGORIE --- */}
       <section id="produits" className="py-16 md:py-24 px-4 max-w-6xl mx-auto">
         <div className="text-center mb-12 md:mb-16">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif mb-4">{t.products.title}</h2>
@@ -1043,17 +1126,29 @@ export default function HomePage() {
                 </div>
                 <h3 className="text-xl font-semibold mb-3 text-[#164228]">{p.title}</h3>
                 <p className="text-slate-500 text-sm mb-6 leading-relaxed">{p.desc}</p>
-                <button className="w-full py-3 bg-[#164228] text-white rounded-lg font-medium flex items-center justify-center gap-2 hover:bg-emerald-800 transition-colors duration-300 group/btn">
+                
+                {/* MODIFIÉ : Bouton pour demander un tarif par email */}
+                <button 
+                  onClick={() => sendPriceRequestEmail(p.title)}
+                  className="w-full py-3 bg-[#164228] text-white rounded-lg font-medium flex items-center justify-center gap-2 hover:bg-emerald-800 transition-colors duration-300 group/btn"
+                >
+                  <DollarSign size={16} />
                   {t.products.cta}
                   <ChevronRight size={16} className="group-hover/btn:translate-x-1 transition-transform" />
                 </button>
+                
+                <p className="text-xs text-slate-500 text-center mt-3">
+                  {language === 'fr' 
+                    ? 'Un email s\'ouvrira avec votre logiciel de messagerie'
+                    : 'An email will open with your mail software'}
+                </p>
               </div>
             </motion.div>
           ))}
         </div>
       </section>
 
-      {/* --- 7. CERTIFICATIONS --- */}
+      {/* --- 6. CERTIFICATIONS --- */}
       <section id="pourquoi" className="py-16 md:py-24 bg-[#164228] text-white mx-4 rounded-3xl overflow-hidden">
         <div className="max-w-6xl mx-auto px-4 text-center">
           <div className="mb-12 md:mb-16">
@@ -1082,6 +1177,58 @@ export default function HomePage() {
             ))}
           </div>
         </div>
+      </section>
+
+      {/* --- 7. GALERIE --- */}
+      <section id="gallery" className="py-16 md:py-24 px-4 max-w-6xl mx-auto">
+        <div className="text-center mb-12 md:mb-16">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif mb-4">{t.gallery.title}</h2>
+          <p className="text-slate-600 max-w-2xl mx-auto">
+            {t.gallery.subtitle}
+          </p>
+        </div>
+        
+        <motion.div 
+          variants={staggerContainer}
+          initial="initial"
+          whileInView="whileInView"
+          viewport={{ once: true }}
+          className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4"
+        >
+          {galleryImages.map((image, index) => (
+            <motion.div
+              key={image.id}
+              variants={fadeInUp}
+              className="relative aspect-square rounded-xl overflow-hidden group cursor-pointer"
+              onClick={() => setSelectedGalleryImage(image.src)}
+            >
+              <Image
+                src={image.src}
+                alt={image.alt}
+                fill
+                className="object-cover group-hover:scale-110 transition-transform duration-500"
+                sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+              />
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
+              <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/80 to-transparent translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                <p className="text-white text-xs font-medium text-center">{image.alt}</p>
+              </div>
+              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <Camera className="text-white" size={24} />
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
+        
+        <motion.div 
+          {...fadeInUp}
+          className="text-center mt-12"
+        >
+          <button className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-600 text-white rounded-full font-medium hover:bg-emerald-700 transition-colors duration-300">
+            <Camera size={18} />
+            {t.gallery.viewMore}
+          </button>
+        </motion.div>
       </section>
 
       {/* --- 8. CONTACT & FOOTER --- */}
@@ -1209,6 +1356,35 @@ export default function HomePage() {
           </div>
         </div>
       </footer>
+
+      {/* MODAL GALERIE */}
+      <AnimatePresence>
+        {selectedGalleryImage && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center p-4"
+            onClick={() => setSelectedGalleryImage(null)}
+          >
+            <button 
+              className="absolute top-4 right-4 text-white p-2 z-10"
+              onClick={() => setSelectedGalleryImage(null)}
+            >
+              <X size={32} />
+            </button>
+            <div className="relative w-full max-w-4xl h-auto max-h-[90vh]" onClick={(e) => e.stopPropagation()}>
+              <Image
+                src={selectedGalleryImage}
+                alt="Image agrandie"
+                width={1200}
+                height={800}
+                className="object-contain w-full h-full rounded-lg"
+              />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </main>
   );
 }
