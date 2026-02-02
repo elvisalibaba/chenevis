@@ -765,7 +765,7 @@ export default function HomePage() {
           className="absolute inset-0 opacity-40"
         >
           <Image 
-            src="/images/hero-bg.jpg" 
+            src="/images/WhatsApp Image 2026-01-07 at 10.02.54 (4).jpeg" 
             alt="Culture de chanvre" 
             fill 
             className="object-cover"
