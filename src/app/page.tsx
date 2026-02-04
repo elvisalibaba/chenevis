@@ -438,7 +438,7 @@ export default function HomePage() {
     const subject = `${t.products.emailSubject} ${productTitle}`;
     const body = `${t.products.emailBody}${productTitle}\n\nPourriez-vous me transmettre votre tarif détaillé ainsi que les conditions de livraison ?\n\nMerci d'avance.\n\nCordialement,\n[Nom]\n[Entreprise]\n[Téléphone]`;
     
-    const mailtoLink = `mailto:contact@scamaladiere.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    const mailtoLink = `mailto:thibaut_r@hotmail.fr?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     
     window.open(mailtoLink, '_blank');
   };
@@ -1283,11 +1283,11 @@ export default function HomePage() {
               </h5>
               <div className="space-y-4">
                 <a 
-                  href="mailto:contact@scamaladiere.com" 
+                  href="mailto:thibaut_r@hotmail.fr" 
                   className="flex items-center gap-3 hover:text-emerald-400 transition-colors duration-300"
                 >
                   <Mail size={18} className="flex-shrink-0" />
-                  contact@scamaladiere.com
+                  thibaut_r@hotmail.fr
                 </a>
                 <a 
                   href="tel:+33688566627" 
